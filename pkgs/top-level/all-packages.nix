@@ -748,6 +748,8 @@ with pkgs;
     substitutions = { inherit (binutils) targetPrefix; };
   } ../build-support/setup-hooks/fix-darwin-dylib-names.sh;
 
+  generateDarwinLauncher = makeSetupHook { deps = [ libicns ]; } ../build-support/setup-hooks/generate-darwin-launcher.sh;
+
   keepBuildTree = makeSetupHook { } ../build-support/setup-hooks/keep-build-tree.sh;
 
   enableGCOVInstrumentation = makeSetupHook { } ../build-support/setup-hooks/enable-coverage-instrumentation.sh;
