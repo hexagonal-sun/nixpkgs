@@ -11,6 +11,7 @@
 , Security
 , AppKit
 , CoreServices
+, desktop2DarwinLauncher
 
 , useWayland ? false
 }:
@@ -37,7 +38,7 @@ mkYarnPackage rec {
     sha256 = pinData.desktopYarnHash;
   };
 
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [ makeWrapper ] ++ lib.optionals stdenv.isDarwin [ desktop2DarwinLauncher ];
 
   seshat = callPackage ./seshat { inherit CoreServices; };
   keytar = callPackage ./keytar { inherit Security AppKit; };

@@ -748,7 +748,10 @@ with pkgs;
     substitutions = { inherit (binutils) targetPrefix; };
   } ../build-support/setup-hooks/fix-darwin-dylib-names.sh;
 
-  generateDarwinLauncher = makeSetupHook { deps = [ libicns ]; } ../build-support/setup-hooks/generate-darwin-launcher.sh;
+  writeDarwinLauncher = callPackage ../build-support/make-darwin-application/write.nix { };
+
+  desktop2DarwinLauncher = makeSetupHook { deps = [ libicns writeDarwinLauncher imagemagick ]; }
+    ../build-support/setup-hooks/desktop-2-darwin-launcher.sh;
 
   keepBuildTree = makeSetupHook { } ../build-support/setup-hooks/keep-build-tree.sh;
 
