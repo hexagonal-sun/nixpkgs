@@ -4,7 +4,7 @@ let
   pListText = lib.generators.toPlist { } {
     CFBundleDevelopmentRegion = "English";
     CFBundleExecutable = "$name";
-    CFBundleIconFiles = [ "$iconPlistArray" ];
+    CFBundleIconFile = "$iconFile";
     CFBundleIdentifier = "org.nixos.$name";
     CFBundleInfoDictionaryVersion = "6.0";
     CFBundleName = "$name";
@@ -21,11 +21,7 @@ in writeScriptBin "write-darwin-bundle" ''
     readonly prefix="$1"
     readonly name="$2"
     readonly exec="$3"
-    iconPlistArray=""
-
-    for icon in "$prefix/Applications/$name.app/Contents/Resources"/*; do
-        iconPlistArray="$iconPlistArray</string><string>"$(basename "$icon")""
-    done
+    readonly iconFile="$name.icns"
 
     cat > "$prefix/Applications/$name.app/Contents/Info.plist" <<EOF
 ${pListText}

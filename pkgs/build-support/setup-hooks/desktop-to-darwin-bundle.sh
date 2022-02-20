@@ -16,23 +16,21 @@ convertDesktopFile() {
     local -r name=$(getDesktopParam "${file}" "^Name")
     local -r exec=$(getDesktopParam "${file}" "Exec")
     local -r iconName=$(getDesktopParam "${file}" "Icon")
-    local -r iconFiles=$(find "$out/share/icons/" -name "${iconName}.*" 2>/dev/null);
-    local -r pixMaps=$(find "$out/share/pixmaps/" -name "${iconName}.xpm" 2>/dev/null);
+    local -ar iconFiles=($(find "$out/share/icons/" -name "${iconName}.*" 2>/dev/null))
+    local -ar pixMaps=($(find "$out/share/pixmaps/" -name "${iconName}.xpm" 2>/dev/null))
 
     mkdir -p "$out/Applications/${name}.app/Contents/MacOS"
     mkdir -p "$out/Applications/${name}.app/Contents/Resources"
 
-    local i=0;
-    for icon in $iconFiles; do
-      ln -s "$icon" "$out/Applications/${name}.app/Contents/Resources/$i-$(basename "$icon")"
-      (( i +=1 ));
+    local -a convertedPixMaps
+    for pixmap in $pixMaps; do
+        local newIconName=$(mktemp --suffix=.png);
+        convertedPixMaps+=($newIconName)
+        convert "$pixmap" "$newIconName"
     done
 
-    for pixmap in $pixMaps; do
-      local newIconName="$i-$(basename "$pixmap")";
-      convert "$pixmap" "$out/Applications/${name}.app/Contents/Resources/${newIconName%.xpm}.png"
-      (( i +=1 ));
-    done
+    echo pnging to icons
+    png2icns "$out/Applications/${name}.app/Contents/Resources/${name}.icns" "${iconFiles[@]}" "${convertedPixMaps[@]}"
 
     write-darwin-bundle "$out" "$name" "$exec"
 }
